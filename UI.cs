@@ -360,35 +360,55 @@ $"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalT
 + $"#" + n
 					);
 				int minsize = 2;
-				var list = GetPoints();
-				SizeUntil(list, minsize);
-				string buff = "";
-				foreach (var f1 in list)
+				var list1 = OpenGLControl.OGLControl.GLrender.RenderableObjects;
+				var p1 = Parallel.ForEach(list1.ToArray(), ((RenderableObject f) =>
 				{
-					f1.MakeShort(4);
-					buff += $"# {f1.x}, {f1.y}, {f1.z}" + n;
-					buff += ($"particle note {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
-				}
+					SizeUntil(f.PointCloud, minsize);
+					f.PointCloud.Scale(0.1f);
+					MoveUp(f.PointCloud, 0);
+					string buff = "";
+					foreach (var f2 in f.PointCloud.Vectors)
+					{
+						var f1 = new Particle(f2);
+						f1.MakeShort(4);
+						buff += $"# {f1.x}, {f1.y}, {f1.z}" + n;
+						buff += ($"particle note {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
+					}
 
-				File.AppendAllText(path, buff);
+					File.AppendAllText(path, buff);
+				}));
 			}
 		}
 
-		private void SizeUntil(List<Particle> list, int minsize)
+		private void MoveUp(PointCloud pointCloud, int lowestpoint)
+		{
+			double i = lowestpoint;
+			foreach (var f in pointCloud.Vectors)
+			{
+				if (f.Y < i)
+					i = f.Y;
+			}
+			pointCloud.Translate(0, -1 * i, 0);
+		}
+
+		private void SizeUntil(PointCloud pc, int minsize)
 		{
 			bool Again = false;
-			foreach (var f1 in list)
+			foreach (var f1 in pc.Vectors)
 			{
 				int a = 0;
-				foreach (var f2 in list)
+				foreach (var f2 in pc.Vectors)
 				{
-					var distVec = f1.ToVector() - f2.ToVector();
+					var distVec = f1 - f2;
 					var dist = Math.Sqrt((distVec.X * distVec.X) + (distVec.Y * distVec.Y) + (distVec.Z * distVec.Z));
 					if (dist == 0)
 						break;
 					if (dist < minsize)
 					{
-						SizeUp(list, dist *minsize);
+						if (dist > 1)
+							pc.Scale((float)(dist));
+						else
+							pc.Scale((1.1f));
 						a++;
 					}
 				}
@@ -399,18 +419,8 @@ $"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalT
 				}
 			}
 			if (Again)
-				SizeUntil(list, minsize);
+				SizeUntil(pc, minsize);
 			return;
-		}
-
-		private void SizeUp(List<Particle> list, double v)
-		{
-			foreach (var f1 in list)
-			{
-				f1.x = f1.x * v;
-				f1.y = f1.y * v;
-				f1.z = f1.z * v;
-			}
 		}
 	}
 }

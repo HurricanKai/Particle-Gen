@@ -17,6 +17,20 @@ namespace Testing
 			this.z = z;
 		}
 
+		public Particle(Vector3d vec)
+		{
+			this.x = vec.X;
+			this.y = vec.Y;
+			this.z = vec.Z;
+		}
+
+		public Particle(Vector3 vec)
+		{
+			this.x = vec.X;
+			this.y = vec.Y;
+			this.z = vec.Z;
+		}
+
 		public Vector3d ToVector()
 		{
 			return new Vector3d(x, y, z);
@@ -24,11 +38,17 @@ namespace Testing
 
 		public void MakeShort(int v)
 		{
-			string xs = x.ToString().Remove(v);
+			string xs = x.ToString();
+			if (xs.Length > v)
+			xs.Remove(v);
 			x = double.Parse(xs);
-			string ys = y.ToString().Remove(v);
+			string ys = y.ToString();
+			if (ys.Length > v)
+				ys.Remove(v);
 			y = double.Parse(ys);
-			string zs = z.ToString().Remove(v);
+			string zs = z.ToString();
+			if (zs.Length > v)
+				zs.Remove(v);
 			z = double.Parse(zs);
 		}
 	}

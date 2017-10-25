@@ -10,7 +10,7 @@ ParGen is a program that allows you to:
 Initial commit
  
 ## Installation instructions
-Download some libraries and hope it works ;)
+Download Latest Release, Unzip, Have Fun!
 
 ## Important!
 This does require some dependencies to work properly. You will have to find them yourself tho

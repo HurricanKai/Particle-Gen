@@ -20,6 +20,13 @@ namespace Testing
 		private Label label1;
 		private Label label2;
 		private Button button1;
+		private ProgressBar progressBar1;
+		private TextBox textBox1;
+		private Label label3;
+		private TextBox textBox2;
+		private Label label4;
+		private TextBox textBox3;
+		private Label label5;
 		private PerformanceCheck pc = new PerformanceCheck();
 
 
@@ -49,6 +56,13 @@ namespace Testing
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.button1 = new System.Windows.Forms.Button();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.textBox3 = new System.Windows.Forms.TextBox();
+			this.label5 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// panelOpenTK
@@ -87,16 +101,79 @@ namespace Testing
 			this.button1.UseVisualStyleBackColor = true;
 			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
+			// progressBar1
+			// 
+			this.progressBar1.Location = new System.Drawing.Point(746, 656);
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(128, 23);
+			this.progressBar1.TabIndex = 5;
+			// 
+			// textBox1
+			// 
+			this.textBox1.Location = new System.Drawing.Point(430, 724);
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(310, 20);
+			this.textBox1.TabIndex = 6;
+			this.textBox1.Text = "particlestand";
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(427, 709);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(55, 13);
+			this.label3.TabIndex = 7;
+			this.label3.Text = "Entity Tag";
+			// 
+			// textBox2
+			// 
+			this.textBox2.Location = new System.Drawing.Point(605, 777);
+			this.textBox2.Name = "textBox2";
+			this.textBox2.Size = new System.Drawing.Size(269, 20);
+			this.textBox2.TabIndex = 8;
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(602, 761);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(98, 13);
+			this.label4.TabIndex = 9;
+			this.label4.Text = "Summon Command";
+			// 
+			// textBox3
+			// 
+			this.textBox3.Location = new System.Drawing.Point(430, 777);
+			this.textBox3.Name = "textBox3";
+			this.textBox3.Size = new System.Drawing.Size(169, 20);
+			this.textBox3.TabIndex = 10;
+			this.textBox3.Text = "note";
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(430, 760);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(69, 13);
+			this.label5.TabIndex = 11;
+			this.label5.Text = "Particle Type";
+			// 
 			// UI
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(886, 757);
+			this.ClientSize = new System.Drawing.Size(902, 1010);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.textBox3);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.textBox2);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.textBox1);
+			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.panelOpenTK);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -361,7 +438,11 @@ $"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalT
 					);
 				int minsize = 2;
 				var list1 = OpenGLControl.OGLControl.GLrender.RenderableObjects;
-				var p1 = Parallel.ForEach(list1.ToArray(), ((RenderableObject f) =>
+				progressBar1.Minimum = 0;
+				progressBar1.Maximum = 100;
+				progressBar1.Step = 100 / list1.Count;
+				progressBar1.Style = ProgressBarStyle.Blocks;
+				foreach(var f in list1.ToArray())
 				{
 					SizeUntil(f.PointCloud, minsize);
 					f.PointCloud.Scale(0.1f);
@@ -372,11 +453,17 @@ $"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalT
 						var f1 = new Particle(f2);
 						f1.MakeShort(4);
 						buff += $"# {f1.x}, {f1.y}, {f1.z}" + n;
-						buff += ($"particle note {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
+						buff += ($"execute @e[tag={textBox1.Text}] ~ ~ ~ particle {textBox3.Text} {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
 					}
 
 					File.AppendAllText(path, buff);
-				}));
+
+					progressBar1.PerformStep();
+				}
+
+				textBox2.Text = "/summon armor_stand ~ ~ ~ {Tags:[\""+ textBox1.Text + "\"],NoGravity:1b,Marker:1b,Invisible:1}";
+
+				MessageBox.Show("Your Scene was Exported with Success", "Export");
 			}
 		}
 

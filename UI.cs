@@ -3,6 +3,7 @@ using OpenTKLib;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -18,6 +19,7 @@ namespace Testing
 		private Panel panelOpenTK; //Move this for Moving Renderer
 		private Label label1;
 		private Label label2;
+		private Button button1;
 		private PerformanceCheck pc = new PerformanceCheck();
 
 
@@ -46,6 +48,7 @@ namespace Testing
 			this.panelOpenTK = new System.Windows.Forms.Panel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// panelOpenTK
@@ -74,11 +77,22 @@ namespace Testing
 			this.label2.TabIndex = 3;
 			this.label2.Text = "label2";
 			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(746, 685);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(128, 60);
+			this.button1.TabIndex = 4;
+			this.button1.Text = "Export";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
 			// UI
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(886, 757);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.panelOpenTK);
@@ -328,6 +342,75 @@ namespace Testing
 		{
 			OnClosed(e);
 		}
-#endregion
+		#endregion
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog ofd = new SaveFileDialog();
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				var path = ofd.FileName;
+				if (File.Exists(path))
+					File.Delete(path);
+				File.Create(path).Close();
+				string n = System.Environment.NewLine;
+				File.WriteAllText(path,
+$"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalTime().ToString("MM/dd/yyyy HH:mm")}" + n
++ $"#" + n
++ $"#" + n
+					);
+				int minsize = 2;
+				var list = GetPoints();
+				SizeUntil(list, minsize);
+				string buff = "";
+				foreach (var f1 in list)
+				{
+					f1.MakeShort(4);
+					buff += $"# {f1.x}, {f1.y}, {f1.z}" + n;
+					buff += ($"particle note {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
+				}
+
+				File.AppendAllText(path, buff);
+			}
+		}
+
+		private void SizeUntil(List<Particle> list, int minsize)
+		{
+			bool Again = false;
+			foreach (var f1 in list)
+			{
+				int a = 0;
+				foreach (var f2 in list)
+				{
+					var distVec = f1.ToVector() - f2.ToVector();
+					var dist = Math.Sqrt((distVec.X * distVec.X) + (distVec.Y * distVec.Y) + (distVec.Z * distVec.Z));
+					if (dist == 0)
+						break;
+					if (dist < minsize)
+					{
+						SizeUp(list, dist *minsize);
+						a++;
+					}
+				}
+				if (a > 0)
+				{
+					Again = true;
+					break;
+				}
+			}
+			if (Again)
+				SizeUntil(list, minsize);
+			return;
+		}
+
+		private void SizeUp(List<Particle> list, double v)
+		{
+			foreach (var f1 in list)
+			{
+				f1.x = f1.x * v;
+				f1.y = f1.y * v;
+				f1.z = f1.z * v;
+			}
+		}
 	}
 }

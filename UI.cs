@@ -453,7 +453,7 @@ $"#Last Edited: @{TimeZone.CurrentTimeZone.StandardName}, {DateTime.Now.ToLocalT
 						var f1 = new Particle(f2);
 						f1.MakeShort(4);
 						buff += $"# {f1.x}, {f1.y}, {f1.z}" + n;
-						buff += ($"execute @e[tag={textBox1.Text}] ~ ~ ~ particle {textBox3.Text} {f1.x} {f1.y} {f1.z} 0.1 0.1 0.1 0.1 1 .1" + n).Replace(',', '.');
+						buff += ($"execute as @e[tag={textBox1.Text}] at @s run particle {textBox3.Text} ~{f1.x} ~{f1.y} ~{f1.z} 0.1 0.1 0.1 0.1 1 normal" + n).Replace(',', '.');
 					}
 
 					File.AppendAllText(path, buff);

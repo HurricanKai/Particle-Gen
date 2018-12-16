@@ -33,13 +33,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
-      <HintPath>..\binExtern\OpenTK.dll</HintPath>
+      <HintPath>Extern\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.Compatibility">
-      <HintPath>..\binExtern\OpenTK.Compatibility.dll</HintPath>
+      <HintPath>Extern\OpenTK.Compatibility.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>..\binExtern\OpenTK.GLControl.dll</HintPath>
+      <HintPath>Extern\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTKLib">
+      <HintPath>Extern\OpenTKLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -106,15 +109,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenTKLib\OpenTKLib.csproj">
-      <Project>{df1f2330-134c-4ec6-a97c-3011d3072f0a}</Project>
-      <Name>OpenTKLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="UI.resx">
       <DependentUpon>UI.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extern\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
